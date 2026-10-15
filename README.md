@@ -79,5 +79,96 @@ A 2026 pre-registered reproducibility audit ([arXiv:2608.09567](https://arxiv.or
 
 ---
 
+---
+
+## The Five Pillars
+
+### Pillar 1 — G3b Causal Patched-Counterfactual Oracle
+
+A deterministic verification protocol implementing the **G1–G3b evidence ladder**. A vulnerability is confirmed **only** when all four levels pass:
+
+| Level | Test | Pass Condition |
+|---|---|---|
+| **G1** | Vulnerable build trigger | Signal fires |
+| **G2** | Patched build test | Signal must **NOT** fire on signature-preserving patched build |
+| **G3a** | Matched negative control | Signal must **NOT** fire on benign input |
+| **G3b** | Cross-version consistency | Signal fires on **≥3 vulnerable versions**, absent on all patched counterparts |
+
+**Target metrics:** Specificity >95% · Sensitivity >90% · FP Rate <5% · CVE Identifier Integrity >98%
+
+### Pillar 2 — Adaptive Cross-Server MCP Parasitic Chain Exploitation
+
+Tests **multi-server MCP deployments** where a single compromised server can weaponize adjacent trusted servers.
+
+**Attack classes tested:**
+
+- **Tool Shadowing** — Malicious server registers tool with same name as a legitimate server's tool
+- **Registry Rebinding** — Tool definition changes after approval, redirecting to malicious endpoint
+- **OAuth Proxy Token Reuse** — Token issued for the wrong MCP server resource
+- **Cross-Tenant IDOR** — User A calls User B's tool on a shared MCP gateway
+- **STDIO Command Injection** — Unsanitized OS command execution via MCP transport
+- **Temporal Persistence** — Attack adapts across sessions and server restarts
+
+### Pillar 3 — Corpus-Level RAG Poisoning Detection
+
+Builds on RIPE-II ([IEEE DSN 2026](https://www.ieee-security.org/)), which demonstrated poisoned documents reach the model context in **up to 97% of queries** and rank first in **94% of cases**.
+
+- Two-stage evaluation: **retrieval exposure** and **generation compliance** measured separately
+- Calibrated LLM judge correcting for **>5× cosine underreporting**
+- Cross-component propagation modeling across ingestion → chunking → embedding → retrieval → reranking → generation
+
+### Pillar 4 — Concurrency-Aware Serving Infrastructure Fuzzing
+
+Treats **timed multi-request traces** as first-class inputs. Detects the **>35% of serving bugs** that manifest as silent, non-crash anomalies:
+
+- **KV-Cache Isolation Failures** — Cross-request state contamination
+- **Noisy-Neighbor Performance Pathology** — Cost externalization without crash
+- **Silent Output Corruption** — Log-probability divergence across runs
+
+**Targets:** vLLM, SGLang, TGI
+
+### Pillar 5 — Multi-Agent Trust Boundary Graph Analysis
+
+Models agent-to-agent communication as a **directed trust graph** where the trust boundary is a graph edge, not a function call. Detects the structural recurrence of the confused-deputy problem (**CWE-441**) in multi-agent LLM systems.
+
+- Taint-path enumeration from attacker-influenced sources to privileged actions
+- Semantic manipulation validation without protocol violations
+- Cross-framework testing: LangGraph, CrewAI, AutoGen, Google ADK, A2A-MCP
+
+---
+
+## OWASP Mapping
+
+Every finding is mapped dually:
+
+| OWASP LLM Top 10 2026 | OWASP Agentic Applications Top 10 2026 |
+|---|---|
+| LLM01: Prompt Injection | ASI01: Agent Goal Hijack |
+| LLM02: Sensitive Information Disclosure | ASI02: Tool Misuse |
+| LLM03: Excessive Agency | ASI03: Privilege Compromise |
+| LLM04: Supply Chain | ASI04: Supply Chain |
+| LLM05: Data / Model Poisoning | ASI05: Memory Poisoning |
+| LLM06: Unbounded Consumption | ASI06: Resource Abuse |
+| LLM07: Misinformation | ASI07: Misinformation |
+| LLM08: Hidden Context Exposure | ASI08: Context Leakage |
+| LLM09: Vector and Embedding Weaknesses | ASI09: Vector Manipulation |
+| LLM10: Improper Output Handling | ASI10: Output Manipulation |
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- **Python** 3.11 or higher
+- **Docker** 24.0 or higher (for sandboxed target deployment)
+- **GPU** with ≥48GB VRAM (recommended for local model serving)
+- **CUDA** 12.1 or higher
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/lochan-sharma/llm-xploitlab.git
+cd llm-xploitlab
 ## Architecture
 
